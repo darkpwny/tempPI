@@ -1,0 +1,14 @@
+[Unit]
+Description=Node Rest
+
+[Service]
+ExecStart=/usr/bin/nodejs /var/www/tempRest/app.js
+Restart=always
+User=nobody
+Group=root
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/var/www/tempRest
+
+[Install]
+WantedBy=multi-user.target

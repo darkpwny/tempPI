@@ -1,0 +1,26 @@
+[Unit]
+Description=Grafana Container
+Requires=influxContainer.service
+After=influxContainer.service
+
+[Service]
+Restart=always
+User=root
+Group=root
+ExecStart=/usr/bin/docker run -p 3000:3000 -v /home/master/grafana/grafana.ini:/etc/grafana/grafana.ini -v /home/master/grafana:/var/lib/grafana -e "GF_SECURITY_ADMIN_PASSWORD=xxxxxx" --name grafanaContainer grafana/grafana
+ExecStop=/usr/bin/docker stop -t 2 grafanaContainer
+ExecStopPost=/usr/bin/docker rm -f grafanaContainer
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+
+
+
+
+
+
