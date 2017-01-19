@@ -43,7 +43,7 @@ while True:
 	tempval = str(read_temp()) 
 	json = "[ { 'datetime' : '" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "', 'temperature' : '" + tempval +"'}]"
 	print(json)
-	send_data('PI',tempval)
+	send_data(os.uname()[1],tempval)
 	time.sleep(seconds)
 
-// TODO : Host as sensorname, variable timesetting (poss pull from rest? - if not there create default etc) - why is pi loosing wifi all the time?
+//variable timesetting (poss pull from rest? - if not there create default etc) - why is pi loosing wifi all the time?
