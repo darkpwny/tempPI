@@ -1,7 +1,9 @@
 var express = require('express');
 var authRouter = express.Router();
 var influx = require("../model/influx.js");
+var fs = require("fs");
 
+var sensorFile = 'src/config/sensor.json';
 
 var router = function ()
 {
@@ -20,9 +22,32 @@ var router = function ()
 
     };
 
+    var getTimer = function (req, res)
+    {
+        var data = JSON.parse(fs.readFileSync(sensorFile));
+        var id = req.params.id
+
+        if (data.hasOwnProperty(id))
+        {
+            res.contentType('application/json');
+        }
+        else
+        {
+            //SET DEFAULT TIME OF 5 mins
+            data[id] = '{time: 300}';
+            fs.writeFileSync(sensorFile, JSON.stringify(data));
+        }
+        res.send(JSON.stringify(data[id]));
+        res.end();
+    }
+
     authRouter.route('/')
         .get(getIndex)
         .post(recievedPost);
+
+
+    authRouter.route('/Sensors/:id')
+        .get(getTimer);
 
     return authRouter;
 };
