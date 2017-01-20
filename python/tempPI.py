@@ -4,15 +4,40 @@ import time
 import datetime
 import urllib
 import urllib2
+import json
 
-os.system('modprobe w1-gpio')
-os.system('modprobe w1-therm')
  
-base_dir = '/sys/bus/w1/devices/'
-device_folder = glob.glob(base_dir + '28*')[0]
-device_file = device_folder + '/w1_slave'
-url = 'http://dockeriot.cloudapp.net:5000/iot' 
-seconds = 5
+base_dir = ''
+device_folder = ''
+device_file = ''
+
+url = 'http://localhost:5000/iot'
+sensorPath = '/Sensors/'
+seconds = 0
+lastCheckedTime = 0
+host_name = os.uname()[1]
+
+def init():
+    global host_name
+    f = open('sensor_name')
+    lines = f.read()
+    host_name = str.rstrip(lines, '\n')
+    getTime();
+    os.system('modprobe w1-gpio')
+    os.system('modprobe w1-therm')
+    base_dir = '/sys/bus/w1/devices/'
+    device_folder = glob.glob(base_dir + '28*')[0]
+    device_file = device_folder + '/w1_slave'
+    return;
+
+def getTime():
+    global seconds;
+    global lastCheckedTime;
+    a = json.load(urllib2.urlopen(url + sensorPath + host_name));
+    b = json.loads(a)
+    seconds = b['time']
+    lastCheckedTime = 1
+    return;
 
 def read_temp_raw():
     f = open(device_file, 'r')
@@ -39,11 +64,24 @@ def send_data(name,temp):
 	})
 	return urllib2.urlopen(url, params).read()
 
-while True:
-	tempval = str(read_temp()) 
-	json = "[ { 'datetime' : '" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "', 'temperature' : '" + tempval +"'}]"
-	print(json)
-	send_data(os.uname()[1],tempval)
-	time.sleep(seconds)
+def mainloop():
+    global lastCheckedTime
+    while True:
+        lastCheckedTime = lastCheckedTime + seconds
 
-//variable timesetting (poss pull from rest? - if not there create default etc) - why is pi loosing wifi all the time?
+        #print("Delay:")
+        #print(seconds)
+        #print("Last Updated Delay:")
+        #print (lastCheckedTime)
+
+        #tempval = 30
+        tempval = str(read_temp())
+
+        send_data(host_name, tempval)
+        if lastCheckedTime >= 60:
+            getTime()
+        #print("Sleeping")
+        time.sleep(seconds)
+
+init()
+mainloop()

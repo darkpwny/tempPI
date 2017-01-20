@@ -14,8 +14,8 @@ var router = function ()
 
     var recievedPost = function (req, res)
     {
-        //  console.log("Received Post Data");
-        // console.log(req.body);
+        console.log("Received Post Data");
+        console.log(req.body);
 
         influx(req.body.Sensor, req.body.Temperature)
         res.render('index');
@@ -29,12 +29,12 @@ var router = function ()
 
         if (data.hasOwnProperty(id))
         {
-            res.contentType('application/json');
+            //res.contentType('application/json');
         }
         else
         {
             //SET DEFAULT TIME OF 5 mins
-            data[id] = '{time: 300}';
+            data[id] = '{\"time\": 300}';
             fs.writeFileSync(sensorFile, JSON.stringify(data));
         }
         res.send(JSON.stringify(data[id]));
