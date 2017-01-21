@@ -1,0 +1,16 @@
+[Unit]
+Description=tempPI
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python /home/pi/sensor/tempPI.py
+Restart=always
+User=nobody
+Group=root
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/home/pi/sensor
+
+[Install]
+WantedBy=multi-user.target
