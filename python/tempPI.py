@@ -7,11 +7,11 @@ import urllib2
 import json
 
  
-base_dir = ''
-device_folder = ''
-device_file = ''
+base_dir = '/sys/bus/w1/devices/'
+device_folder = glob.glob(base_dir + '28*')[0]
+device_file = device_folder + '/w1_slave'
 
-url = 'http://localhost:5000/iot'
+url = 'http://xxxxxxxxx:5000/iot'
 sensorPath = '/Sensors/'
 seconds = 0
 lastCheckedTime = 0
